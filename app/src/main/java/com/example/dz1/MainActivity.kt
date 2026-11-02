@@ -59,7 +59,7 @@ fun NumberScreen() {
             }
         }
         Button(
-            onClick = { count++ },
+            onClick = {count++},
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(spacing)
