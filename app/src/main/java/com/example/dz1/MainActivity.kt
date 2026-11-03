@@ -5,9 +5,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -31,6 +33,9 @@ fun NumberScreen() {
     var count by rememberSaveable {
         mutableIntStateOf(0)
     }
+    var select by rememberSaveable{
+        mutableStateOf<Int?>(null)
+    }
     val orientation = LocalConfiguration.current.orientation
     val columns = if (
         orientation == Configuration.ORIENTATION_PORTRAIT
@@ -41,35 +46,43 @@ fun NumberScreen() {
     }
     val spacing = dimensionResource(R.dimen.spacing)
     val rows = (count + columns - 1) / columns
-    Column(Modifier.fillMaxSize()) {
-        LazyColumn(
-            modifier = Modifier.weight(1f).padding(spacing)
-        ) {
-            items(rows) { row ->
-                Row(Modifier.fillMaxWidth()) {
-                    repeat(columns) { column ->
-                        val index = row * columns + column
-                        Box(Modifier.weight(1f)) {
-                            if (index < count) {
-                                NumberCard(index)
+    if (select != null){
+        OneNumberScreen(select!!){
+            select = null
+        }
+    } else {
+        Column(Modifier.fillMaxSize()) {
+            LazyColumn(
+                modifier = Modifier.weight(1f).padding(spacing)
+            ) {
+                items(rows) { row ->
+                    Row(Modifier.fillMaxWidth()) {
+                        repeat(columns) { column ->
+                            val index = row * columns + column
+                            Box(Modifier.weight(1f)) {
+                                if (index < count) {
+                                    NumberCard(index){
+                                        select = index
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
-        }
-        Button(
-            onClick = {count++},
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(spacing)
-        ) {
-            Text(stringResource(R.string.add))
+            Button(
+                onClick = {count++},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(spacing)
+            ) {
+                Text(stringResource(R.string.add))
+            }
         }
     }
 }
 @Composable
-fun NumberCard(index: Int) {
+fun NumberCard(index: Int, onClick: () -> Unit) {
     val spacing = dimensionResource(R.dimen.spacing)
     val color = if (index % 2 == 0) {
         colorResource(R.color.red)
@@ -81,12 +94,43 @@ fun NumberCard(index: Int) {
             .fillMaxWidth()
             .padding(spacing)
             .aspectRatio(1f)
-            .background(color),
+            .background(color)
+            .clickable{onClick()},
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = index.toString(),
             color = colorResource(R.color.white)
         )
+    }
+}
+@Composable
+fun OneNumberScreen(index: Int, back: () -> Unit){
+    val spacing = dimensionResource(R.dimen.spacing)
+    val color = if (index % 2 == 0) {
+        colorResource(R.color.red)
+    } else {
+        colorResource(R.color.blue)
+    }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color),
+        contentAlignment = Alignment.Center
+    ){
+        Text(
+            text = index.toString(),
+            color = colorResource(R.color.white)
+        )
+        Button(
+            onClick = {back()},
+            modifier = Modifier.align(Alignment.BottomCenter).padding(spacing),
+            colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.black))
+        ){
+            Text(
+                stringResource(R.string.back),
+                color = colorResource(R.color.white),
+            )
+        }
     }
 }

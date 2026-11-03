@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">dz1</string>
     <string name="add">Добавить карточку</string>
+    <string name="back">Назад</string>
 </resources>
