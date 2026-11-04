@@ -3,6 +3,7 @@ package com.example.dz1
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,6 +36,9 @@ fun NumberScreen() {
     }
     var select by rememberSaveable{
         mutableStateOf<Int?>(null)
+    }
+    BackHandler(select != null) {
+        select = null
     }
     val orientation = LocalConfiguration.current.orientation
     val columns = if (
